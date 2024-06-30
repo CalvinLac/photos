@@ -1528,6 +1528,7 @@
 		-ms-flex-wrap: wrap;
 		flex-wrap: wrap;
 		-webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+		padding: 6em 10em 4em 10em;
 	}
 
 		#main .thumb {
@@ -1561,7 +1562,7 @@
 				left: 0;
 				position: absolute;
 				top: 0;
-				width: 100%;
+				width: 95%;
 			}
 
 			#main .thumb > .image {
@@ -1574,7 +1575,8 @@
 				left: 0;
 				position: absolute;
 				top: 0;
-				width: 100%;
+				width: 95%;
+				height: 95%;
 			}
 
 			#main .thumb > h2 {
