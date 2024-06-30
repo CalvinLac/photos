@@ -1477,6 +1477,7 @@
 							background-color: #242629;
 						}
 
+
 	@media screen and (max-width: 736px) {
 
 		body {
@@ -1514,6 +1515,14 @@
 
 /* Main */
 
+	@media screen and (min-width: 1600px) {
+
+		body {
+			padding: 4em 10em 0 10em;
+		}
+
+	}
+
 	#main {
 		-moz-transition: -moz-filter 0.5s ease, -webkit-filter 0.5s ease, -ms-filter 0.5s ease, -moz-filter 0.5s ease;
 		-webkit-transition: -moz-filter 0.5s ease, -webkit-filter 0.5s ease, -ms-filter 0.5s ease, -webkit-filter 0.5s ease;
@@ -1528,7 +1537,6 @@
 		-ms-flex-wrap: wrap;
 		flex-wrap: wrap;
 		-webkit-tap-highlight-color: rgba(255, 255, 255, 0);
-		padding: 6em 10em 4em 10em;
 	}
 
 		#main .thumb {
