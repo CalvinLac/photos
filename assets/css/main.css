@@ -1553,6 +1553,7 @@
 			opacity: 1;
 			overflow: hidden;
 			position: relative;
+			margin: 10px;
 		}
 
 			#main .thumb:after {
@@ -1571,7 +1572,7 @@
 				left: 0;
 				position: absolute;
 				top: 0;
-				width: 95%;
+				width: 100%;
 			}
 
 			#main .thumb > .image {
@@ -1584,8 +1585,8 @@
 				left: 0;
 				position: absolute;
 				top: 0;
-				width: 95%;
-				height: 95%;
+				width: 100%;
+				height: 100%;
 			}
 
 			#main .thumb > h2 {
@@ -1835,7 +1836,7 @@
 				transition-delay: 1.625s;
 				height: calc(40vh - 2em);
 				min-height: 20em;
-				width: 50%;
+				width: 46%;
 			}
 
 				#main .thumb:nth-child(1) {
@@ -1891,7 +1892,7 @@
 				transition-delay: 2.075s;
 				height: calc(28.57143vh - 1.33333em);
 				min-height: 18em;
-				width: 50%;
+				width: 46%;
 			}
 
 				#main .thumb:nth-child(1) {
