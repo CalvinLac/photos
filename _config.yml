@@ -1,0 +1,22 @@
+# Base configs
+# baseurl: ""
+#baseurl: "" # Comment the above line and uncomment this to test the website locally
+image_fulls_loc: "/images/fulls"
+image_thumbs_loc: "/images/thumbs"
+
+# UI configs
+title: "Photography by Calvin Lac"
+subtitle: "I am photo boi"
+author: "Calvin Lac"
+header:
+ title: "Photography"
+ subtitle: "by Calvin Lac"
+footer:
+ name: "lawlz"
+ bio: "I like fotoing"
+ github: ""
+web_design: "CL"
+# Configure which exif data to display
+# Tag is the actual exif tag, icon is a fontawesome icon. Use JSON notation without line breaks
+exif: '[{"tag": "Model", "icon": "camera-retro"}, {"tag": "FNumber", "icon": "dot-circle-o"}, {"tag": "ExposureTime", "icon": "clock-o"}, {"tag": "ISOSpeedRatings", "icon": "info-circle"}]'
+social_urls:
