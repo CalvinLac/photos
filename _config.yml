@@ -6,14 +6,14 @@ image_thumbs_loc: "/images/thumbs"
 
 # UI configs
 title: "Photography by Calvin Lac"
-subtitle: "I am photo boi"
+subtitle: "Photos"
 author: "Calvin Lac"
 header:
  title: "Photography"
  subtitle: "by Calvin Lac"
 footer:
- name: "I'm Deo"
- bio: "I like fotoing"
+ name: "Hi, I'm Calvin"
+ bio: "Photography is fun - sometimes"
  github: ""
 web_design: "CL"
 # Configure which exif data to display
