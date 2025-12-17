@@ -3,8 +3,7 @@
 2. `$ npm install` - install all npm dependencies
 
 ### Resize Images
-Use the resize.js file in the root of the directory to resize all fulls into thumbs. 
-
-Start with exporting all fulls into the 'images' directory and running the 'resize.js' from the root
+Start with exporting all fulls into the base 'images' directory and running the 'resize.js' from the root of the project.
 
 `node resize.js`
+
