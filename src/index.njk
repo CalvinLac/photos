@@ -1,0 +1,52 @@
+---
+permalink: /index.html
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ site.title }}</title>
+  <meta name="description" content="{{ site.description }}">
+  <meta name="theme-color" content="#0c0c0c">
+  <script>document.documentElement.classList.add("js")</script>
+  <link rel="stylesheet" href="css/photoswipe.css">
+  <link rel="stylesheet" href="css/site.css">
+  <link rel="modulepreload" href="js/photoswipe-lightbox.esm.min.js">
+  <script type="module" src="js/gallery.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <h1 class="site-title"><a href="./">{{ site.author }} <span>Photography</span></a></h1>
+    <button type="button" class="about-button" aria-haspopup="dialog" aria-controls="about">About</button>
+  </header>
+
+  <dialog id="about" class="about" aria-labelledby="about-heading">
+    <div class="about-inner">
+      <h2 id="about-heading">{{ site.about.heading }}</h2>
+      <p>{{ site.about.bio }}</p>
+      <form method="dialog"><button class="about-close">Close</button></form>
+    </div>
+  </dialog>
+
+  <main id="gallery" class="gallery">
+    {%- set sizes = "(min-width: 1248px) 25vw, (min-width: 940px) 33vw, (min-width: 632px) 50vw, 100vw" %}
+    {%- for photo in photos %}
+    <a class="photo" id="{{ photo.id }}" href="{{ photo.full.src }}" data-ratio="{{ photo.crop.height / photo.crop.width }}"
+       style="--placeholder: {{ photo.color }}; aspect-ratio: {{ photo.crop.width }} / {{ photo.crop.height }}
+       {%- if photo.border %}; --scale: {{ photo.border.scale }}%; --inset-x: {{ photo.border.x }}%; --inset-y: {{ photo.border.y }}%{% endif %}"
+       data-pswp-width="{{ photo.full.width }}" data-pswp-height="{{ photo.full.height }}"
+       data-pswp-srcset="{{ photo.full.srcset }}" data-caption="{{ photo.caption }}" data-date="{{ photo.date }}">
+      <picture>
+        <source type="image/avif" srcset="{{ photo.grid.avif }}" sizes="{{ sizes }}">
+        <source type="image/webp" srcset="{{ photo.grid.webp }}" sizes="{{ sizes }}">
+        <img src="{{ photo.grid.src }}" width="{{ photo.grid.width }}" height="{{ photo.grid.height }}" alt="{{ photo.alt }}"
+             loading="{{ 'eager' if loop.index0 < 8 else 'lazy' }}"{% if loop.index0 < 4 %} fetchpriority="high"{% endif %} decoding="async">
+      </picture>
+    </a>
+    {%- endfor %}
+  </main>
+
+  <footer class="site-footer">&copy; {{ site.author }}</footer>
+</body>
+</html>

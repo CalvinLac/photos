@@ -1,0 +1,10 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "uniq": true,
+        "/^cd /home/clac/test-repos/photos && for f in \\$\\(ls images/fulls \\| head -3\\); do file images/fulls/\\$f \\| cut -c1-220; file images/thumbs/\\$f \\| cut -c1-220; done; python3 -c \"\nimport os\ns=sorted\\(os\\.path\\.getsize\\('images/fulls/'\\+f\\) for f in os\\.listdir\\('images/fulls'\\)\\)\nprint\\('min',s\\[0\\]//1024,'KB median',s\\[len\\(s\\)//2\\]//1024,'KB max',s\\[-1\\]//1024,'KB'\\)\nt=sorted\\(os\\.path\\.getsize\\('images/thumbs/'\\+f\\) for f in os\\.listdir\\('images/thumbs'\\)\\)\nprint\\('thumbs median',t\\[len\\(t\\)//2\\]//1024,'KB'\\)\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "npm install": true
+    }
+}
