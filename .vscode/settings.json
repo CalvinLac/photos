@@ -1,4 +1,8 @@
+// VS Code workspace settings (JSONC, so comments are allowed). Editor-only; not used by the build.
 {
+    // Terminal commands that VS Code's chat agent may run without asking for confirmation.
+    // The long regex entry refers to images/fulls and images/thumbs, folders from an older layout
+    // of this repo that no longer exist; it is harmless and can be removed.
     "chat.tools.terminal.autoApprove": {
         "uniq": true,
         "/^cd /home/clac/test-repos/photos && for f in \\$\\(ls images/fulls \\| head -3\\); do file images/fulls/\\$f \\| cut -c1-220; file images/thumbs/\\$f \\| cut -c1-220; done; python3 -c \"\nimport os\ns=sorted\\(os\\.path\\.getsize\\('images/fulls/'\\+f\\) for f in os\\.listdir\\('images/fulls'\\)\\)\nprint\\('min',s\\[0\\]//1024,'KB median',s\\[len\\(s\\)//2\\]//1024,'KB max',s\\[-1\\]//1024,'KB'\\)\nt=sorted\\(os\\.path\\.getsize\\('images/thumbs/'\\+f\\) for f in os\\.listdir\\('images/thumbs'\\)\\)\nprint\\('thumbs median',t\\[len\\(t\\)//2\\]//1024,'KB'\\)\"$/": {

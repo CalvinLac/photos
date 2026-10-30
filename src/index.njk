@@ -1,6 +1,26 @@
 ---
+# The only page on the site. Written to _site/index.html (all asset URLs below are relative, so the
+# site also works when served from a sub-path such as https://<user>.github.io/<repo>/).
 permalink: /index.html
 ---
+{#
+  Gallery page template (Nunjucks).
+
+  Data it uses (Eleventy global data from src/_data/):
+    site    -> src/_data/site.json: title, description, author, about.heading, about.bio
+    photos  -> src/_data/photos.js: one record per photo, already sorted newest first
+               (field reference is in the JSDoc of processPhoto in that file)
+
+  What it renders:
+    - a sticky header with the About button, and the About <dialog>
+    - #gallery: one <a class="photo"> tile per photo. Without JS these are plain links to the
+      largest image laid out with CSS columns; src/js/gallery.js upgrades them to ordered masonry
+      columns and opens them in the PhotoSwipe lightbox instead of following the link.
+
+  Comments in this file start with an opening comment tag plus "-" (whitespace control): that strips
+  the whitespace before the comment so it leaves no blank line in the generated HTML. Never put
+  comments inside a tag's attributes, and never write the comment-closing characters inside one.
+-#}
 <!doctype html>
 <html lang="en">
 <head>
@@ -8,16 +28,22 @@ permalink: /index.html
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ site.title }}</title>
   <meta name="description" content="{{ site.description }}">
+  {#- Matches --bg in site.css (colours the browser UI on mobile). #}
   <meta name="theme-color" content="#0c0c0c">
+  {#- Runs before first paint so the `.js .photo img` fade-in styles only apply when JS is
+      available; without JS the thumbnails are simply visible. #}
   <script>document.documentElement.classList.add("js")</script>
   <link rel="stylesheet" href="css/photoswipe.css">
   <link rel="stylesheet" href="css/site.css">
+  {#- gallery.js imports this module; preloading avoids waiting for gallery.js to download first.
+      The PhotoSwipe core (photoswipe.esm.min.js) is only loaded when the lightbox first opens. #}
   <link rel="modulepreload" href="js/photoswipe-lightbox.esm.min.js">
   <script type="module" src="js/gallery.js"></script>
 </head>
 <body>
   <header class="site-header">
     <h1 class="site-title"><a href="./">{{ site.author }} <span>Photography</span></a></h1>
+    {#- gallery.js finds this button by aria-controls="about" and calls showModal() on #about. #}
     <button type="button" class="about-button" aria-haspopup="dialog" aria-controls="about">About</button>
   </header>
 
@@ -25,13 +51,32 @@ permalink: /index.html
     <div class="about-inner">
       <h2 id="about-heading">{{ site.about.heading }}</h2>
       <p>{{ site.about.bio }}</p>
+      {#- method="dialog" makes the button close the dialog natively, no JS needed. #}
       <form method="dialog"><button class="about-close">Close</button></form>
     </div>
   </dialog>
 
   <main id="gallery" class="gallery">
+    {#- `sizes` tells the browser how wide a tile is so it picks the 480px or 960px thumbnail:
+        4 columns on wide screens, then 3, 2, 1. The breakpoints approximate where the column
+        count changes (300px minimum column + 8px gaps, see site.css `.gallery` and gallery.js
+        layout()). Update them together if you change the column settings. #}
     {%- set sizes = "(min-width: 1248px) 25vw, (min-width: 940px) 33vw, (min-width: 632px) 50vw, 100vw" %}
     {%- for photo in photos %}
+    {#- One tile per photo. What each attribute is for:
+          id                 deep-link target: /#<id> opens this photo (gallery.js openFromHash)
+          href               largest WebP; PhotoSwipe's fallback src, and what opens when JS is
+                             off or the link is middle/modifier-clicked
+          data-ratio         height/width of the visible (cropped) area; gallery.js balances
+                             masonry columns with it
+          style              --placeholder: background colour until the thumbnail fades in;
+                             aspect-ratio: reserves space so the layout doesn't jump;
+                             --scale/--inset-x/--inset-y: only for photos with a white frame,
+                             used by `.photo img` in site.css to crop the frame off
+          data-pswp-*        read by PhotoSwipe for the lightbox image (size + srcset)
+          data-caption/date  shown in the lightbox caption bar (gallery.js uiRegister)
+        The first 8 images load eagerly and the first 4 (the top row once gallery.js has laid out
+        the columns) get fetchpriority="high"; the rest lazy-load. #}
     <a class="photo" id="{{ photo.id }}" href="{{ photo.full.src }}" data-ratio="{{ photo.crop.height / photo.crop.width }}"
        style="--placeholder: {{ photo.color }}; aspect-ratio: {{ photo.crop.width }} / {{ photo.crop.height }}
        {%- if photo.border %}; --scale: {{ photo.border.scale }}%; --inset-x: {{ photo.border.x }}%; --inset-y: {{ photo.border.y }}%{% endif %}"

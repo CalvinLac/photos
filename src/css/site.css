@@ -1,3 +1,20 @@
+/*
+ * Site styles for the gallery page (src/index.njk). Copied unprocessed to _site/css/ by
+ * eleventy.config.js — no preprocessor or bundler. Loaded after photoswipe.css, so rules here win.
+ *
+ * Sections: base/theme, header, gallery (no-JS columns + JS masonry), footer, About dialog,
+ * lightbox overrides, reduced motion.
+ *
+ * Things that must stay in sync with other files:
+ *   --gap and `.gallery { columns: 4 300px }`  <->  GAP / MIN_COLUMN_WIDTH / max 4 in gallery.js
+ *                                                   layout(), and the `sizes` breakpoints in index.njk
+ *   --bg (#0c0c0c)                             <->  theme-color meta in index.njk, header background
+ *   max-width: 599px (lightbox caption)        <->  the 600px threshold in gallery.js padding()
+ *   class names .js, .is-loaded, .is-masonry, .column, .pswp__caption* are added by gallery.js
+ */
+
+/* Base / theme. Change the palette or font here. */
+
 :root {
   color-scheme: dark;
   --bg: #0c0c0c;
@@ -40,6 +57,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   justify-content: space-between;
   gap: 1rem;
   padding: 1.25rem calc(var(--gap) * 2);
+  /* --bg at 82% opacity, blurred, so photos show faintly through the sticky header. */
   background: rgb(12 12 12 / 0.82);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -70,6 +88,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .about-button:hover { color: var(--fg); }
 
 /* Gallery: CSS columns without JS; gallery.js upgrades to ordered masonry columns. */
+/* CSS columns fill top-to-bottom, so without JS the newest photos run down the first column
+   rather than across the top; that's the reason for the JS layout. */
 
 .gallery {
   flex: 1;
@@ -83,13 +103,19 @@ button { font: inherit; color: inherit; cursor: pointer; }
   margin-bottom: var(--gap);
   overflow: hidden;
   break-inside: avoid;
+  /* Per-photo dominant colour (inline style from index.njk) shown until the image fades in. */
   background: var(--placeholder, #1a1a1a);
+  /* Keeps scrollIntoView() (deep links, closing the lightbox) clear of the sticky header. */
   scroll-margin: 4.5rem 0 var(--gap);
 }
 
 .photo picture { display: block; }
 
 /* --scale and --inset-* crop a baked-in white border; percentages are relative to the tile width. */
+/* They're only set for framed photos (computed in src/_data/photos.js analyzeThumbnail()); the
+   tile's aspect-ratio is the frame-less area and overflow: hidden on .photo clips the rest.
+   Without them the defaults make the image fill the tile normally. max-width: none lets the
+   image grow wider than the tile. */
 .photo img {
   display: block;
   width: var(--scale, 100%);
@@ -101,9 +127,13 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 .photo:hover img { transform: scale(1.02); filter: brightness(1.06); }
 
+/* Fade-in: the `js` class is set by an inline script in index.njk and .is-loaded by gallery.js,
+   so with JS disabled the images are never hidden. */
 .js .photo img { opacity: 0; }
 .js .photo img.is-loaded { opacity: 1; }
 
+/* Masonry mode, enabled by gallery.js layout(): #gallery holds `div.column` wrappers, each a
+   vertical flex stack of tiles. `columns: auto` turns the CSS-columns fallback off. */
 .gallery.is-masonry {
   display: flex;
   align-items: flex-start;
@@ -113,6 +143,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 .gallery.is-masonry .column {
   flex: 1;
+  /* Lets equal-width columns shrink below the images' intrinsic width. */
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -141,6 +172,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   color: var(--fg);
 }
 
+/* Dims the page behind the modal; clicking it closes the dialog (gallery.js). */
 .about::backdrop {
   background: rgb(0 0 0 / 0.7);
   backdrop-filter: blur(4px);
@@ -164,8 +196,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 .about-close:hover { border-color: var(--fg); }
 
-/* Lightbox */
+/* Lightbox: overrides for PhotoSwipe's own photoswipe.css, plus the caption bar that
+   gallery.js registers (.pswp__caption with a settings span and .pswp__caption-date). */
 
+/* PhotoSwipe's backdrop colour (shown fully opaque, see bgOpacity in gallery.js). */
 .pswp { --pswp-bg: #050505; }
 
 .pswp__caption {
@@ -178,12 +212,15 @@ button { font: inherit; color: inherit; cursor: pointer; }
   padding: 1.25rem 1.5rem;
   color: #c4c4c4;
   font: 0.8125rem/1.4 var(--font);
+  /* Fixed-width digits so the text doesn't shift between slides. */
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.01em;
 }
 
 .pswp__caption-date { color: var(--muted); }
 
+/* Phones: the image fills the screen (no padding in gallery.js), so the caption sits over it
+   on a gradient to stay readable. */
 @media (max-width: 599px) {
   .pswp__caption {
     padding: 2.5rem 1rem 1rem;
@@ -191,6 +228,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   }
 }
 
+/* Reduced motion: no fades or hover zoom. PhotoSwipe handles its own animations. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; }
   .photo:hover img { transform: none; }

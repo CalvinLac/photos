@@ -1,48 +1,74 @@
+# Builds the Eleventy site and publishes _site/ to GitHub Pages.
+#
+# One-time setup: repo Settings -> Pages -> Build and deployment -> Source = "GitHub Actions".
+# No secrets are needed; the jobs authenticate with the built-in GITHUB_TOKEN/OIDC token using the
+# permissions below. The published URL is shown on the run and in the "github-pages" environment.
 name: Deploy to GitHub Pages
 
 on:
+  # Every push to main (e.g. adding/removing photos) redeploys the site.
   push:
     branches: [main]
+  # Adds a "Run workflow" button on the Actions tab for manual redeploys.
   workflow_dispatch:
 
+# Least privilege for the GITHUB_TOKEN:
+#   contents: read  - check out the repo
+#   pages: write    - create the Pages deployment
+#   id-token: write - OIDC token that actions/deploy-pages uses to prove where the artifact came from
 permissions:
   contents: read
   pages: write
   id-token: write
 
+# Only one Pages deployment at a time. A newer run waits for the one in progress instead of
+# cancelling it, so a deployment is never interrupted half-way.
 concurrency:
   group: pages
   cancel-in-progress: false
 
 jobs:
+  # Build job: install dependencies, generate the site, upload _site/ as the Pages artifact.
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
 
+      # Node 24 with npm's download cache keyed on package-lock.json.
       - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
 
+      # Clean, exact install from package-lock.json (fails if it's out of sync with package.json).
       - run: npm ci
 
       # Reuse resized images from earlier runs so only new or edited photos are processed.
+      # The exact key changes whenever an original, the image pipeline or a dependency changes.
+      # On a miss, `restore-keys` restores the most recent `img-*` cache instead; eleventy-img then
+      # skips every derivative that already exists, and src/_data/photos.js deletes ones that are
+      # no longer used before the site is uploaded. The updated folder is saved under the new key
+      # at the end of the job. To force a full rebuild, delete the caches under Actions -> Caches.
       - uses: actions/cache@v6
         with:
           path: _site/img
           key: img-${{ hashFiles('photos/originals/**', 'src/_data/photos.js', 'package-lock.json') }}
           restore-keys: img-
 
+      # Runs `eleventy` (package.json "build" script) and writes the site to _site/.
       - run: npm run build
 
+      # Packages _site/ as the artifact that the deploy job publishes.
       - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
 
+  # Deploy job: publish the artifact from the build job to GitHub Pages.
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    # Deploying to the "github-pages" environment links the run to the live URL and lets you add
+    # protection rules (Settings -> Environments) if you ever want approvals.
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
